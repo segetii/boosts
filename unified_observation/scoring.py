@@ -23,6 +23,10 @@ from .weights import (
 )
 from .utils import ensure_float64, validate_data, cap_iterations
 
+# Constants for trimmed mean computation
+MIN_SAMPLES_FOR_TRIMMING = 10
+MIN_FRACTION_RETAINED = 0.1
+
 
 def compute_reference(
     X: np.ndarray,
@@ -80,7 +84,8 @@ def compute_reference(
             current_X = new_X
             
             # Safety check: ensure we don't trim too much
-            if len(current_X) < max(10, 0.1 * len(X)):
+            min_samples = max(MIN_SAMPLES_FOR_TRIMMING, MIN_FRACTION_RETAINED * len(X))
+            if len(current_X) < min_samples:
                 break
         
         return np.mean(current_X, axis=0)

@@ -148,10 +148,18 @@ def main():
         anomaly_scores = scores[detected_labels]
         normal_scores = scores[~detected_labels]
         
+        normal_std = np.std(normal_scores)
+        
+        # Safe separation calculation with epsilon protection
+        if normal_std > 1e-12:
+            separation = (np.mean(anomaly_scores) - np.mean(normal_scores)) / normal_std
+        else:
+            separation = 0.0
+        
         print(f"\n   {metric}:")
         print(f"      Anomaly - mean: {np.mean(anomaly_scores):.4f}, std: {np.std(anomaly_scores):.4f}")
-        print(f"      Normal  - mean: {np.mean(normal_scores):.4f}, std: {np.std(normal_scores):.4f}")
-        print(f"      Separation: {(np.mean(anomaly_scores) - np.mean(normal_scores)) / np.std(normal_scores):.2f} σ")
+        print(f"      Normal  - mean: {np.mean(normal_scores):.4f}, std: {normal_std:.4f}")
+        print(f"      Separation: {separation:.2f} σ")
     
     # Find which component contributed most
     print("\n4. Top contributing components for detected anomalies...")

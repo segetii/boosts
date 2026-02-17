@@ -157,7 +157,12 @@ def main():
         scores = component_scores[metric]
         avg_anomaly = np.mean(scores[detected_labels])
         avg_normal = np.mean(scores[~detected_labels])
-        ratio = avg_anomaly / avg_normal if avg_normal > 0 else float('inf')
+        
+        # Avoid division by zero
+        if avg_normal != 0:
+            ratio = avg_anomaly / avg_normal
+        else:
+            ratio = float('inf') if avg_anomaly != 0 else 1.0
         
         print(f"      {metric:25s}: anomaly={avg_anomaly:.4f}, normal={avg_normal:.4f}, ratio={ratio:.2f}x")
     

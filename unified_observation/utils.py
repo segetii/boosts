@@ -47,13 +47,13 @@ def validate_data(X: np.ndarray, name: str = "data") -> None:
         
     Raises:
         ValueError: If data contains NaN or inf
+        TypeError: If data is not a numpy array or cannot be validated
     """
     if not isinstance(X, np.ndarray):
         raise TypeError(f"{name} must be a numpy array")
     
     if X.dtype not in [np.float32, np.float64]:
-        # Try to convert
-        X = X.astype(np.float64)
+        raise TypeError(f"{name} must be float32 or float64, got {X.dtype}. Convert before validation.")
     
     if np.any(np.isnan(X)):
         raise ValueError(f"{name} contains NaN values")

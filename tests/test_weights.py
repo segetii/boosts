@@ -121,9 +121,17 @@ def test_fisher_weights():
     np.random.seed(42)
     labels = np.array([0] * 50 + [1] * 50)
     
+    # Create well-separated metric with variance within groups
+    inner_scores = np.random.randn(50) * 0.5 + 1.0
+    outer_scores = np.random.randn(50) * 0.5 + 5.0
+    metric1_scores = np.concatenate([inner_scores, outer_scores])
+    
+    # Create non-separated metric with higher variance
+    metric2_scores = np.random.randn(100) * 2.0
+    
     scores_dict = {
-        'metric1': np.concatenate([np.random.randn(50) * 0.5 + 1.0, np.random.randn(50) * 0.5 + 5.0]),  # Clear separation with variance
-        'metric2': np.random.randn(100) * 2.0,  # No separation, higher variance
+        'metric1': metric1_scores,
+        'metric2': metric2_scores,
     }
     
     weights = fisher_weights(scores_dict, labels)
