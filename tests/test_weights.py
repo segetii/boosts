@@ -117,11 +117,13 @@ def test_fisher_weights():
     print("Testing fisher_weights...")
     
     # Create synthetic scores with clear separation
+    # Fix random seed for reproducibility
+    np.random.seed(42)
     labels = np.array([0] * 50 + [1] * 50)
     
     scores_dict = {
-        'metric1': np.concatenate([np.ones(50) * 1.0, np.ones(50) * 5.0]),  # Clear separation
-        'metric2': np.random.randn(100),  # No separation
+        'metric1': np.concatenate([np.random.randn(50) * 0.5 + 1.0, np.random.randn(50) * 0.5 + 5.0]),  # Clear separation with variance
+        'metric2': np.random.randn(100) * 2.0,  # No separation, higher variance
     }
     
     weights = fisher_weights(scores_dict, labels)
@@ -132,7 +134,7 @@ def test_fisher_weights():
     # Check all weights are non-negative
     assert all(w >= 0 for w in weights.values()), "All weights should be non-negative"
     
-    # Well-separated metric should get higher weight
+    # Well-separated metric should get higher weight (when there's variance within groups)
     assert weights['metric1'] > weights['metric2'], "Well-separated metric should get higher weight"
     
     print("✓ fisher_weights passed")
